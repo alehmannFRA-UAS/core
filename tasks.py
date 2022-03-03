@@ -209,30 +209,6 @@ def install_poetry(c: Context, dev: bool, local: bool, hide: bool) -> None:
                 c.run("poetry run pre-commit install", hide=hide)
 
 
-def install_ospf_mdr(c: Context, os_info: OsInfo, hide: bool) -> None:
-    if c.run("which zebra", warn=True, hide=hide):
-        print("\nquagga already installed, skipping ospf mdr")
-        return
-    if os_info.like == OsLike.DEBIAN:
-        c.run("sudo apt install -y libtool gawk libreadline-dev git", hide=hide)
-    elif os_info.like == OsLike.REDHAT:
-        c.run("sudo yum install -y libtool gawk readline-devel git", hide=hide)
-    ospf_dir = "../ospf-mdr"
-    ospf_url = "https://github.com/USNavalResearchLaboratory/ospf-mdr.git"
-    c.run(f"git clone {ospf_url} {ospf_dir}", hide=hide)
-    with c.cd(ospf_dir):
-        c.run(f"git checkout {OSPFMDR_CHECKOUT}", hide=hide)
-        c.run("./bootstrap.sh", hide=hide)
-        c.run(
-            "./configure --disable-doc --enable-user=root --enable-group=root "
-            "--with-cflags=-ggdb --sysconfdir=/usr/local/etc/quagga --enable-vtysh "
-            "--localstatedir=/var/run/quagga",
-            hide=hide
-        )
-        c.run("make -j$(nproc)", hide=hide)
-        c.run("sudo make install", hide=hide)
-
-
 def install_service(c, verbose=False, prefix=DEFAULT_PREFIX):
     """
     install systemd core service
@@ -320,7 +296,6 @@ def install_core_files(c, local=False, verbose=False, prefix=DEFAULT_PREFIX):
         "prefix": f"prefix where scripts are installed, default is {DEFAULT_PREFIX}",
         "install-type": "used to force an install type, "
                         "can be one of the following (redhat, debian)",
-        "ospf": "disable ospf installation",
     },
 )
 def install(
@@ -330,10 +305,9 @@ def install(
     local=False,
     prefix=DEFAULT_PREFIX,
     install_type=None,
-    ospf=True,
 ):
     """
-    install core, poetry, scripts, service, and ospf mdr
+    install core, poetry, scripts, service
     """
     print(f"installing core locally: {local}")
     print(f"installing core with prefix: {prefix}")
@@ -359,9 +333,6 @@ def install(
         install_core_files(c, local, hide, prefix)
     with p.start("installing systemd service"):
         install_service(c, hide, prefix)
-    if ospf:
-        with p.start("installing ospf mdr"):
-            install_ospf_mdr(c, os_info, hide)
     print("\ninstall complete!")
 
 
