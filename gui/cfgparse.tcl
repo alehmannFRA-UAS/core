@@ -54,6 +54,7 @@
 #****
 
 proc dumpputs {method dest string} {
+	puts "write to $dest --> $string"
     switch -exact -- $method {
 	file {
 	    puts $dest $string
@@ -622,6 +623,10 @@ proc loadCfg { cfg } {
 			    # Boeing - custom-image
 			    lappend $object "custom-image $value"
 		        }
+			container-image {
+				# fra-uas.de - container-image
+				lappend $object "container-image $value"
+			}
 			ine-config {
 			    # Boeing - INE
 			    set cfg ""
@@ -1143,5 +1148,4 @@ proc initDefaultPrefs {} {
     }
     # add new preferences above; keep this at the end of the file
 }
-
 
