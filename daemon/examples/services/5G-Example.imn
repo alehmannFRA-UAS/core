@@ -1,0 +1,3342 @@
+node n1 {
+    type router
+    model PC
+    network-config {
+	hostname AMF
+	!
+	interface eth0
+	 ip address 10.0.1.20/24
+	!
+    }
+    canvas c1
+    iconcoords {196.0 115.0}
+    labelcoords {202.0 163.0}
+    services {AMF}
+    custom-config {
+	custom-config-id service:AMF
+	custom-command AMF
+	config {
+	files=('/etc/open5gs/amf.yaml', )
+	cmdup=('open5gs-amfd', )
+	}
+    }
+    custom-config {
+	custom-config-id service:AMF:/etc/open5gs/amf.yaml
+	custom-command /etc/open5gs/amf.yaml
+	config {
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,ngap,nas,gmm,sbi,amf,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/amf.log
+	#    level: debug
+	#
+	# amf:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:80)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#      - tls:
+	#          key: amf.key
+	#          pem: amf.pem
+	#
+	#  o SBI Server(https://127.0.0.5:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.5
+	#        tls:
+	#          key: amf.key
+	#          pem: amf.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://amf.open5gs.org:80)
+	#    sbi:
+	#      - name: amf.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.5:7777)
+	#    sbi:
+	#      - addr: 127.0.0.5
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      - dev: eth0
+	#
+	#  o Provide custom SBI address to be advertised to NRF
+	#    sbi:
+	#      - dev: eth0
+	#        advertise: open5gs-amf.svc.local
+	#
+	#    sbi:
+	#      - addr: localhost
+	#        advertise:
+	#          - 127.0.0.99
+	#          - ::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.5
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	#  <NGAP Server>>
+	#
+	#  o NGAP Server(all address avaiable)
+	#    ngap:
+	#
+	#  o NGAP Server(0.0.0.0:38412)
+	#    ngap:
+	#      addr: 0.0.0.0
+	#
+	#  o NGAP Server(127.0.0.5:38412, [::1]:38412)
+	#    ngap:
+	#      - addr: 127.0.0.5
+	#      - addr: ::1
+	#
+	#  o NGAP Server(different port)
+	#    ngap:
+	#      - addr: 127.0.0.5
+	#        port: 38413
+	#
+	#  o NGAP Server(address avaiable in `eth0` interface)
+	#    ngap:
+	#      dev: eth0
+	#
+	#  o NGAP Option (Default)
+	#    - sctp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    ngap:
+	#      addr: 127.0.0.5
+	#      option:
+	#        stcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	#  o NGAP SCTP Option (Default)
+	#    - spp_hbinterval : 5000 (5secs)
+	#    - spp_sackdelay : 200 (200ms)
+	#    - srto_initial : 3000 (3secs)
+	#    - srto_min : 1000 (1sec)
+	#    - srto_max : 5000 (5secs)
+	#    - sinit_num_ostreams : 30
+	#    - sinit_max_instreams : 65535
+	#    - sinit_max_attempts : 4
+	#    - sinit_max_init_timeo : 8000(8secs)
+	#
+	#    ngap:
+	#      addr: 127.0.0.5
+	#      option:
+	#        sctp:
+	#          spp_hbinterval : 5000
+	#          spp_sackdelay : 200
+	#          srto_initial : 3000
+	#          srto_min : 1000
+	#          srto_max : 5000
+	#          sinit_num_ostreams : 30
+	#          sinit_max_instreams : 65535
+	#          sinit_max_attempts : 4
+	#          sinit_max_init_timeo : 8000
+	#
+	#  <GUAMI>
+	#
+	#  o Multiple GUAMI
+	#    guami:
+	#      - plmn_id:
+	#          mcc: 901
+	#          mnc: 70
+	#        amf_id:
+	#          region: 2
+	#          set: 1
+	#          pointer: 4
+	#      - plmn_id:
+	#          mcc: 001
+	#          mnc: 01
+	#        amf_id:
+	#          region: 5
+	#          set: 2
+	#
+	#  <TAI>
+	#
+	#  o Multiple TAI
+	#    tai:
+	#      - plmn_id:
+	#          mcc: 001
+	#          mnc: 01
+	#        tac: [1, 2, 3]
+	#    tai:
+	#      - plmn_id:
+	#          mcc: 002
+	#          mnc: 02
+	#        tac: 4
+	#      - plmn_id:
+	#          mcc: 003
+	#          mnc: 03
+	#        tac: 5
+	#    tai:
+	#      - plmn_id:
+	#          mcc: 004
+	#          mnc: 04
+	#        tac: [6, 7]
+	#      - plmn_id:
+	#          mcc: 005
+	#          mnc: 05
+	#        tac: 8
+	#      - plmn_id:
+	#          mcc: 006
+	#          mnc: 06
+	#        tac: [9, 10]
+	#
+	#  <PLMN Support>
+	#
+	#  o Multiple PLMN Support
+	#    plmn_support:
+	#      - plmn_id:
+	#          mcc: 901
+	#          mnc: 70
+	#        s_nssai:
+	#          - sst: 1
+	#            sd: 010000
+	#      - plmn_id:
+	#          mcc: 901
+	#          mnc: 70
+	#        s_nssai:
+	#          - sst: 1
+	#
+	#  <Network Name>
+	#
+	#    network_name:
+	#        full: Open5GS
+	#        short: Next
+	#
+	#  <AMF Name>
+	#
+	#    amf_name: amf1.open5gs.amf.5gc.mnc70.mcc901.3gppnetwork.org
+	#
+	#  <Relative Capacity> - Default(255)
+	#
+	#    relative_capacity: 100
+	#
+	amf:
+	    sbi:
+	      - addr: 10.0.1.20
+	        port: 7777
+	    ngap:
+	      - addr: 10.0.1.20
+	    guami:
+	      - plmn_id:
+	          mcc: 001
+	          mnc: 01
+	        amf_id:
+	          region: 2
+	          set: 1
+	    tai:
+	      - plmn_id:
+	          mcc: 001
+	          mnc: 01
+	        tac: 1
+	    plmn_support:
+	      - plmn_id:
+	          mcc: 001
+	          mnc: 01
+	        s_nssai:
+	          - sst: 1
+	    security:
+	        integrity_order : [ NIA2, NIA1, NIA0 ]
+	        ciphering_order : [ NEA0, NEA1, NEA2 ]
+	    network_name:
+	        full: Open5GS
+	    amf_name: open5gs-amf0
+	
+	#
+	# nrf:
+	#
+	#  <SBI Client>>
+	#
+	#  o SBI Client(http://127.0.0.10:7777)
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      port: 7777
+	#
+	#  o SBI Client(https://127.0.0.10:443, http://nrf.open5gs.org:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - name: nrf.open5gs.org
+	#
+	#  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)
+	#    If prefer_ipv4 is true, http://127.0.0.10:80 is selected.
+	#
+	#    sbi:
+	#      addr:
+	#        - 127.0.0.10
+	#        - fd69:f21d:873c:fa::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	nrf:
+	    sbi:
+	      - addr: 10.0.1.21
+	        port: 7777
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# usrsctp:
+	#    udp_port : 9899
+	#
+	usrsctp:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 0)
+	#    NFs will not send heart-beat timer in NFProfile
+	#    NRF will send heart-beat timer in NFProfile
+	#
+	#  o NF Instance Heartbeat (20 seconds)
+	#    NFs will send heart-beat timer (20 seconds) in NFProfile
+	#    NRF can change heart-beat timer in NFProfile
+	#
+	#    nf_instance:
+	#      heartbeat: 20
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	#
+	#  o Handover Wait Duration (Default : 300 ms)
+	#    Time to wait for AMF to send UEContextReleaseCommand
+	#    to the source gNB after receiving HandoverNotify
+	#
+	#  o Handover Wait Duration (500ms)
+	#    handover:
+	#        duration: 500
+	time:
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	# auto-generated by DefaultRoute service (utility.py)
+	ip route add default via 10.0.1.27
+	ip route add default via 2001:1::1
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	dirs=()
+	files=('defaultroute.sh',)
+	startidx=0
+	cmdup=('bash defaultroute.sh',)
+	cmddown=()
+	cmdval=()
+	meta=None
+	starttime=0
+	}
+    }
+    interface-peer {eth0 n10}
+}
+
+node n2 {
+    type router
+    model PC
+    network-config {
+	hostname NRF
+	!
+	interface eth0
+	 ip address 10.0.1.21/24
+	!
+    }
+    canvas c1
+    iconcoords {302.0 52.0}
+    labelcoords {302.0 84.0}
+    services {NRF}
+    custom-config {
+	custom-config-id service:NRF
+	custom-command NRF
+	config {
+	files=('/etc/open5gs/nrf.yaml', )
+	}
+    }
+    custom-config {
+	custom-config-id service:NRF:/etc/open5gs/nrf.yaml
+	custom-command /etc/open5gs/nrf.yaml
+	config {
+	db_uri: mongodb://10.0.1.40:27017/open5gs
+	
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,sbi,nrf,event,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/nrf.log
+	
+	#
+	# nrf:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:7777)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#
+	#  o SBI Server(https://127.0.0.10:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://nrf.open5gs.org:80)
+	#    sbi:
+	#      name: nrf.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.10:7777)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      dev: eth0
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	nrf:
+	    sbi:
+	      addr:
+	        - 10.0.1.21
+	      port: 7777
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 10 seconds)
+	#
+	#  o NF Instance Heartbeat (Disabled)
+	#    nf_instance:
+	#      heartbeat: 0
+	#
+	#  o NF Instance Heartbeat (5 seconds)
+	#    nf_instance:
+	#      heartbeat: 5
+	#
+	#  o NF Instance Validity (Default : 3600 seconds = 1 hour)
+	#
+	#  o NF Instance Validity (10 seconds)
+	#    nf_instance:
+	#      validity: 10
+	#
+	#  o Subscription Validity (Default : 86400 seconds = 1 day)
+	#
+	#  o Subscription Validity (Disabled)
+	#    subscription:
+	#      validity: 0
+	#
+	#  o Subscription Validity (3600 seconds = 1 hour)
+	#    subscription:
+	#      validity: 3600
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	time:
+	
+	}
+    }
+    interface-peer {eth0 n10}
+}
+
+node n3 {
+    type router
+    model PC
+    network-config {
+	hostname UDM
+	!
+	interface eth0
+	 ip address 10.0.1.22/24
+	!
+    }
+    canvas c1
+    iconcoords {437.0 46.0}
+    labelcoords {437.0 78.0}
+    services {UDM}
+    custom-config {
+	custom-config-id service:UDM
+	custom-command UDM
+	config {
+	files=('/etc/open5gs/udm.yaml', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UDM:/etc/open5gs/udm.yaml
+	custom-command /etc/open5gs/udm.yaml
+	config {
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,sbi,udm,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/udm.log
+	#
+	# udm:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:80)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#      - tls:
+	#          key: udm.key
+	#          pem: udm.pem
+	#
+	#  o SBI Server(https://127.0.0.12:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.12
+	#        tls:
+	#          key: udm.key
+	#          pem: udm.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://udm.open5gs.org:80)
+	#    sbi:
+	#      - name: udm.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.12:7777)
+	#    sbi:
+	#      - addr: 127.0.0.12
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      - dev: eth0
+	#
+	#  o Provide custom SBI address to be advertised to NRF
+	#    sbi:
+	#      - dev: eth0
+	#        advertise: open5gs-udm.svc.local
+	#
+	#    sbi:
+	#      - addr: localhost
+	#        advertise:
+	#          - 127.0.0.99
+	#          - ::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.12
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	udm:
+	    sbi:
+	      - addr: 10.0.1.22
+	        port: 7777
+	
+	#
+	# nrf:
+	#
+	#  <SBI Client>>
+	#
+	#  o SBI Client(http://127.0.0.10:7777)
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      port: 7777
+	#
+	#  o SBI Client(https://127.0.0.10:443, http://nrf.open5gs.org:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - name: nrf.open5gs.org
+	#
+	#  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)
+	#    If prefer_ipv4 is true, http://127.0.0.10:80 is selected.
+	#
+	#    sbi:
+	#      addr:
+	#        - 127.0.0.10
+	#        - fd69:f21d:873c:fa::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	nrf:
+	    sbi:
+	      - addr: 10.0.1.21
+	        port: 7777
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 0)
+	#    NFs will not send heart-beat timer in NFProfile
+	#    NRF will send heart-beat timer in NFProfile
+	#
+	#  o NF Instance Heartbeat (20 seconds)
+	#    NFs will send heart-beat timer (20 seconds) in NFProfile
+	#    NRF can change heart-beat timer in NFProfile
+	#
+	#    nf_instance:
+	#      heartbeat: 20
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	time:
+	
+	}
+    }
+    interface-peer {eth0 n10}
+}
+
+node n4 {
+    type router
+    model PC
+    network-config {
+	hostname UDR
+	!
+	interface eth0
+	 ip address 10.0.1.23/24
+	!
+    }
+    canvas c1
+    iconcoords {502.5 53.0}
+    labelcoords {502.5 85.0}
+    services {UDR}
+    custom-config {
+	custom-config-id service:UDR
+	custom-command UDR
+	config {
+	files=('/etc/open5gs/udr.yaml', )
+	starttime=
+	}
+    }
+    custom-config {
+	custom-config-id service:UDR:/etc/open5gs/udr.yaml
+	custom-command /etc/open5gs/udr.yaml
+	config {
+	db_uri: mongodb://10.0.1.40:27017/open5gs
+	
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,sbi,udr,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/udr.log
+	#
+	# udr:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:80)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#      - tls:
+	#          key: udr.key
+	#          pem: udr.pem
+	#
+	#  o SBI Server(https://127.0.0.20:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.20
+	#        tls:
+	#          key: udr.key
+	#          pem: udr.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://udr.open5gs.org:80)
+	#    sbi:
+	#      - name: udr.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.20:7777)
+	#    sbi:
+	#      - addr: 127.0.0.20
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      - dev: eth0
+	#
+	#  o Provide custom SBI address to be advertised to NRF
+	#    sbi:
+	#      - dev: eth0
+	#        advertise: open5gs-udr.svc.local
+	#
+	#    sbi:
+	#      - addr: localhost
+	#        advertise:
+	#          - 127.0.0.99
+	#          - ::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.20
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	udr:
+	    sbi:
+	      - addr: 10.0.1.23
+	        port: 7777
+	
+	#
+	# nrf:
+	#
+	#  <SBI Client>>
+	#
+	#  o SBI Client(http://127.0.0.10:7777)
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      port: 7777
+	#
+	#  o SBI Client(https://127.0.0.10:443, http://nrf.open5gs.org:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - name: nrf.open5gs.org
+	#
+	#  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)
+	#    If prefer_ipv4 is true, http://127.0.0.10:80 is selected.
+	#
+	#    sbi:
+	#      addr:
+	#        - 127.0.0.10
+	#        - fd69:f21d:873c:fa::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	nrf:
+	    sbi:
+	      - addr: 10.0.1.21
+	        port: 7777
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 0)
+	#    NFs will not send heart-beat timer in NFProfile
+	#    NRF will send heart-beat timer in NFProfile
+	#
+	#  o NF Instance Heartbeat (20 seconds)
+	#    NFs will send heart-beat timer (20 seconds) in NFProfile
+	#    NRF can change heart-beat timer in NFProfile
+	#
+	#    nf_instance:
+	#      heartbeat: 20
+	#
+	#  o NF Instance Heartbeat (Disabled)
+	#    nf_instance:
+	#      heartbeat: 0
+	#
+	#  o NF Instance Heartbeat (10 seconds)
+	#    nf_instance:
+	#      heartbeat: 10
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	time:
+	
+	}
+    }
+    interface-peer {eth0 n10}
+}
+
+node n5 {
+    type router
+    model PC
+    network-config {
+	hostname AUSF
+	!
+	interface eth0
+	 ip address 10.0.1.24/24
+	!
+    }
+    canvas c1
+    iconcoords {661.3333333333334 74.0}
+    labelcoords {661.3333333333334 106.0}
+    services {AUSF}
+    custom-config {
+	custom-config-id service:AUSF
+	custom-command AUSF
+	config {
+	files=('/etc/open5gs/ausf.yaml', )
+	}
+    }
+    custom-config {
+	custom-config-id service:AUSF:/etc/open5gs/ausf.yaml
+	custom-command /etc/open5gs/ausf.yaml
+	config {
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,sbi,ausf,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/ausf.log
+	#
+	# ausf:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:80)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#      - tls:
+	#          key: ausf.key
+	#          pem: ausf.pem
+	#
+	#  o SBI Server(https://127.0.0.11:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.11
+	#        tls:
+	#          key: ausf.key
+	#          pem: ausf.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://ausf.open5gs.org:80)
+	#    sbi:
+	#      - name: ausf.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.11:7777)
+	#    sbi:
+	#      - addr: 127.0.0.11
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      - dev: eth0
+	#
+	#  o Provide custom SBI address to be advertised to NRF
+	#    sbi:
+	#      - dev: eth0
+	#        advertise: open5gs-ausf.svc.local
+	#
+	#    sbi:
+	#      - addr: localhost
+	#        advertise:
+	#          - 127.0.0.99
+	#          - ::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.11
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	ausf:
+	    sbi:
+	      - addr: 10.0.1.24
+	        port: 7777
+	#
+	# nrf:
+	#
+	#  <SBI Client>>
+	#
+	#  o SBI Client(http://127.0.0.10:7777)
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      port: 7777
+	#
+	#  o SBI Client(https://127.0.0.10:443, http://nrf.open5gs.org:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - name: nrf.open5gs.org
+	#
+	#  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)
+	#    If prefer_ipv4 is true, http://127.0.0.10:80 is selected.
+	#
+	#    sbi:
+	#      addr:
+	#        - 127.0.0.10
+	#        - fd69:f21d:873c:fa::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	nrf:
+	    sbi:
+	      - addr: 10.0.1.21
+	        port: 7777
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 0)
+	#    NFs will not send heart-beat timer in NFProfile
+	#    NRF will send heart-beat timer in NFProfile
+	#
+	#  o NF Instance Heartbeat (20 seconds)
+	#    NFs will send heart-beat timer (20 seconds) in NFProfile
+	#    NRF can change heart-beat timer in NFProfile
+	#
+	#    nf_instance:
+	#      heartbeat: 20
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	time:
+	
+	}
+    }
+    interface-peer {eth0 n10}
+}
+
+node n6 {
+    type router
+    model PC
+    network-config {
+	hostname SMF
+	!
+	interface eth0
+	 ip address 10.0.1.25/24
+	!
+    }
+    canvas c1
+    iconcoords {663.0 222.33333333333334}
+    labelcoords {663.0 254.33333333333334}
+    services {SMF}
+    custom-config {
+	custom-config-id service:SMF
+	custom-command SMF
+	config {
+	files=('/etc/open5gs/smf.yaml', )
+	}
+    }
+    custom-config {
+	custom-config-id service:SMF:/etc/open5gs/smf.yaml
+	custom-command /etc/open5gs/smf.yaml
+	config {
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,pfcp,fd,pfcp,gtp,smf,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/smf.log
+	#    level: debug
+	#
+	# smf:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:80)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#      - tls:
+	#          key: smf.key
+	#          pem: smf.pem
+	#
+	#  o SBI Server(https://127.0.0.4:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.4
+	#        tls:
+	#          key: smf.key
+	#          pem: smf.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://smf.open5gs.org:80)
+	#    sbi:
+	#      - name: smf.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.4:7777)
+	#    sbi:
+	#      - addr: 127.0.0.4
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      - dev: eth0
+	#
+	#  o Provide custom SBI address to be advertised to NRF
+	#    sbi:
+	#      - dev: eth0
+	#        advertise: open5gs-smf.svc.local
+	#
+	#    sbi:
+	#      - addr: localhost
+	#        advertise:
+	#          - 127.0.0.99
+	#          - ::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.4
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	#  <PFCP Server>
+	#
+	#  o PFCP Server(127.0.0.4:8805, ::1:8805)
+	#    pfcp:
+	#      - addr: 127.0.0.4
+	#      - addr: ::1
+	#
+	#  o PFCP-U Server(127.0.0.1:2152, [::1]:2152)
+	#    pfcp:
+	#      name: localhost
+	#
+	#  o PFCP Option (Default)
+	#    - so_bindtodevice : NULL
+	#
+	#    pfcp:
+	#      addr: 127.0.0.4
+	#      option:
+	#        so_bindtodevice: vrf-blue
+	#
+	#  <GTP-C Server>
+	#
+	#  o GTP-C Server(127.0.0.4:2123, [fd69:f21d:873c:fa::3]:2123)
+	#    gtpc:
+	#      addr:
+	#        - 127.0.0.4
+	#        - fd69:f21d:873c:fa::3
+	#
+	#  o On SMF, Same configuration
+	#    (127.0.0.4:2123, [fd69:f21d:873c:fa::3]:2123).
+	#    gtpc:
+	#      - addr: 127.0.0.4
+	#      - addr: fd69:f21d:873c:fa::3
+	#
+	#  o GTP-C Option (Default)
+	#    - so_bindtodevice : NULL
+	#
+	#    gtpc:
+	#      addr: 127.0.0.4
+	#      option:
+	#        so_bindtodevice: vrf-blue
+	#
+	#  <GTP-U Server>>
+	#
+	#  o GTP-U Server(127.0.0.4:2152, [::1]:2152)
+	#    gtpu:
+	#      - addr: 127.0.0.4
+	#      - addr: ::1
+	#
+	#  o GTP-U Server(127.0.0.1:2152, [::1]:2152)
+	#    gtpu:
+	#      name: localhost
+	#
+	#  o GTP-U Option (Default)
+	#    - so_bindtodevice : NULL
+	#
+	#    gtpu:
+	#      addr: 127.0.0.4
+	#      option:
+	#        so_bindtodevice: vrf-blue
+	#
+	#  <Subnet for UE Pool>
+	#
+	#  o IPv4 Pool
+	#    subnet:
+	#      addr: 10.45.0.1/16
+	#
+	#  o IPv4/IPv6 Pool
+	#    subnet:
+	#      - addr: 10.45.0.1/16
+	#      - addr: 2001:db8:cafe::1/48
+	#
+	#
+	#  o Specific DNN/APN(e.g 'ims') uses 10.46.0.1/16, 2001:db8:babe::1/48
+	#    ; If the UE has unknown DNN/APN(not internet/ims), SMF/UPF will crash.
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/16
+	#        dnn: internet
+	#      - addr: 2001:db8:cafe::1/48
+	#        dnn: internet
+	#      - addr: 10.46.0.1/16
+	#        dnn: ims
+	#      - addr: 2001:db8:babe::1/48
+	#        dnn: ims
+	#
+	#  o Specific DNN/APN with the FALLBACK SUBNET(10.47.0.1/16)
+	#    ; Note that put the FALLBACK SUBNET last to avoid SMF/UPF crash.
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/16
+	#        dnn: internet
+	#      - addr: 10.46.0.1/16
+	#        dnn: ims
+	#      - addr: 10.50.0.1/16 ## FALLBACK SUBNET
+	#
+	#  o Pool Range Sample
+	#    subnet:
+	#      - addr: 10.45.0.1/24
+	#        range: 10.45.0.100-10.45.0.200
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/24
+	#        range:
+	#          - 10.45.0.5-10.45.0.50
+	#          - 10.45.0.100-
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/24
+	#        range:
+	#          - -10.45.0.200
+	#          - 10.45.0.210-10.45.0.220
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/16
+	#        range:
+	#          - 10.45.0.100-10.45.0.200
+	#          - 10.45.1.100-10.45.1.200
+	#      - addr: 2001:db8:cafe::1/48
+	#        range:
+	#          - 2001:db8:cafe:a0::0-2001:db8:cafe:b0::0
+	#          - 2001:db8:cafe:c0::0-2001:db8:cafe:d0::0
+	#
+	#  <Domain Name Server>
+	#
+	#  o Primary/Secondary can be configured. Others are ignored.
+	#
+	#    dns:
+	#      - 8.8.8.8
+	#      - 8.8.4.4
+	#      - 2001:4860:4860::8888
+	#      - 2001:4860:4860::8844
+	#
+	#  <MTU Size>
+	#
+	#  o Provisioning a limit on the size of the packets sent by the MS
+	#    to avoid packet fragmentation in the backbone network
+	#    between the MS and the GGSN/PGW and/or across the (S)Gi reference point)
+	#    when some of the backbone links does not support
+	#    packets larger then 1500 octets
+	#
+	#  <P-CSCF>
+	#
+	#  o Proxy Call Session Control Function
+	#
+	#    p-cscf:
+	#      - 127.0.0.1
+	#      - ::1
+	#
+	#  <CTF>
+	#
+	#  o Gy interface parameters towards OCS.
+	#  o enabled:
+	#    o auto: Default. Use Gy only if OCS available among Diameter peers
+	#    o yes:  Use Gy always;
+	#            reject subscribers if no OCS available among Diameter peers
+	#    o no:   Don't use Gy interface if there is an OCS available
+	#
+	#    ctf:
+	#      enabled: auto|yes|no
+	#
+	#
+	#  <SMF Selection - 5G Core only>
+	#  1. SMF sends SmfInfo(S-NSSAI, DNN, TAI) to the NRF
+	#  2. NRF responds to AMF with SmfInfo during NF-Discovery.
+	#  3. AMF selects SMF based on S-NSSAI, DNN and TAI in SmfInfo.
+	#
+	#  Note that if there is no SmfInfo, any AMF can select this SMF.
+	#
+	#  o S-NSSAI[SST:1] and DNN[internet] - At least 1 DNN is required in S-NSSAI
+	#    info:
+	#      - s_nssai:
+	#          - sst: 1
+	#            dnn:
+	#              - internet
+	#
+	#  o S-NSSAI[SST:1 SD:009000] and DNN[internet or ims]
+	#    info:
+	#      - s_nssai:
+	#          - sst: 1
+	#            sd: 009000
+	#            dnn:
+	#              - internet
+	#              - ims
+	#
+	#  o S-NSSAI[SST:1] and DNN[internet] and TAI[PLMN-ID:90170 TAC:1]
+	#    info:
+	#      - s_nssai:
+	#          - sst: 1
+	#            dnn:
+	#              - internet
+	#        tai:
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            tac: 1
+	#
+	#  o If any of conditions below are met:
+	#   - S-NSSAI[SST:1] and DNN[internet] and TAI[PLMN-ID:90170 TAC:1-9]
+	#   - S-NSSAI[SST:2 SD:000080] and DNN[internet or ims]
+	#   - S-NSSAI[SST:4] and DNN[internet] and TAI[PLMN-ID:90170 TAC:10-20,30-40]
+	#
+	#    info:
+	#      - s_nssai:
+	#          - sst: 1
+	#            dnn:
+	#              - internet
+	#        tai:
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            range:
+	#              - 1-9
+	#      - s_nssai:
+	#          - sst: 2
+	#            sd: 000080
+	#            dnn:
+	#              - internet
+	#              - ims
+	#      - s_nssai:
+	#          - sst: 4
+	#            dnn:
+	#              - internet
+	#        tai:
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            range:
+	#              - 10-20
+	#              - 30-40
+	#
+	#  o Complex Example
+	#    info:
+	#      - s_nssai:
+	#          - sst: 1
+	#            dnn:
+	#              - internet
+	#          - sst: 1
+	#            sd: 000080
+	#            dnn:
+	#              - internet
+	#              - ims
+	#          - sst: 1
+	#            sd: 009000
+	#            dnn:
+	#              [internet, ims]
+	#          - sst: 2
+	#            dnn:
+	#              - internet
+	#          - sst: 3
+	#            sd: 123456
+	#            dnn:
+	#              - internet
+	#        tai:
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            tac: [1, 2, 3]
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            tac: 4
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            tac:
+	#              - 5
+	#              - 6
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            range:
+	#              - 100-200
+	#              - 300-400
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            range:
+	#              - 500-600
+	#              - 700-800
+	#              - 900-1000
+	#      - s_nssai:
+	#          - sst: 4
+	#            dnn:
+	#              - internet
+	#        tai:
+	#          - plmn_id:
+	#              mcc: 901
+	#              mnc: 70
+	#            tac: 99
+	#
+	
+	smf:
+	    sbi:
+	      - addr: 10.0.1.25
+	        port: 7777
+	    pfcp:
+	      - addr: 10.0.1.25
+	    gtpc:
+	      - addr: 10.0.1.25
+	    gtpu:
+	      - addr: 10.0.1.25
+	    subnet:
+	      - addr: 10.45.0.1/16
+	        dnn: internet
+	    dns:
+	      - 8.8.8.8
+	      - 8.8.4.4
+	    mtu: 1400
+	    ctf:
+	      enabled: auto
+	    freeDiameter: /etc/freeDiameter/smf.conf
+	    info:
+	      - s_nssai:
+	          - sst: 1
+	            dnn:
+	              - internet
+	        tai:
+	          - plmn_id:
+	              mcc: 001
+	              mnc: 01
+	            tac: 1
+	
+	# nrf:
+	#
+	#  <SBI Client>>
+	#
+	#  o SBI Client(http://127.0.0.1:7777)
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      port: 7777
+	#
+	#  o SBI Client(https://127.0.0.10:443, http://nrf.open5gs.org:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - name: nrf.open5gs.org
+	#
+	#  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)
+	#    If prefer_ipv4 is true, http://127.0.0.10:80 is selected.
+	#
+	#    sbi:
+	#      addr:
+	#        - 127.0.0.10
+	#        - fd69:f21d:873c:fa::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	nrf:
+	    sbi:
+	      - addr: 10.0.1.21
+	        port: 7777
+	
+	#
+	# upf:
+	#
+	#  <PFCP Client>>
+	#
+	#  o PFCP Client(127.0.0.7:8805)
+	#
+	#    pfcp:
+	#      addr: 127.0.0.7
+	#
+	#  <UPF Selection>
+	#
+	#  o Round-Robin
+	#    (note that round robin can be disabled for a particular node
+	#     by setting flag 'rr' to 0)
+	#
+	#  upf:
+	#    pfcp:
+	#      - addr: 127.0.0.7
+	#      - addr: 127.0.0.12
+	#        rr: 0
+	#      - addr: 127.0.0.19
+	#
+	#  o UPF selection by eNodeB TAC
+	#    (either single TAC or multiple TACs, DECIMAL representation)
+	#
+	#  upf:
+	#    pfcp:
+	#      - addr: 127.0.0.7
+	#        tac: 1
+	#      - addr: 127.0.0.12
+	#        tac: [3,5,8]
+	#
+	#  o UPF selection by UE's DNN/APN (either single DNN/APN or multiple DNNs/APNs)
+	#
+	#  upf:
+	#    pfcp:
+	#      - addr: 127.0.0.7
+	#        dnn: ims
+	#      - addr: 127.0.0.12
+	#        dnn: [internet, web]
+	#
+	#  o UPF selection by CellID(e_cell_id: 28bit, nr_cell_id: 36bit)
+	#    (either single enb_id or multiple enb_ids, HEX representation)
+	#
+	#  upf:
+	#    pfcp:
+	#      - addr: 127.0.0.7
+	#        e_cell_id: 463
+	#      - addr: 127.0.0.12
+	#        nr_cell_id: [123456789, 9413]
+	#
+	upf:
+	    pfcp:
+	      - addr: 10.0.1.26
+	        dnn: internet
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	#  o Disable selection of UPF PFCP in Round-Robin manner
+	#      no_pfcp_rr_select: true
+	#
+	#  o Legacy support for pre-release LTE 11 devices
+	#    - Omits adding local address in packet filters for compatibility
+	#      no_ipv4v6_local_addr_in_packet_filter: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 0)
+	#    NFs will not send heart-beat timer in NFProfile
+	#    NRF will send heart-beat timer in NFProfile
+	#
+	#  o NF Instance Heartbeat (20 seconds)
+	#    NFs will send heart-beat timer (20 seconds) in NFProfile
+	#    NRF can change heart-beat timer in NFProfile
+	#
+	#    nf_instance:
+	#      heartbeat: 20
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	#
+	#  o Handover Wait Duration (Default : 300 ms)
+	#    Time to wait for SMF to send
+	#    PFCP Session Modification Request(Remove Indirect Tunnel) to the UPF
+	#    after sending Nsmf_PDUSession_UpdateSMContext Response(hoState:COMPLETED)
+	#
+	#  o Handover Wait Duration (500ms)
+	#    handover:
+	#        duration: 500
+	time:
+	
+	}
+    }
+    interface-peer {eth0 n10}
+}
+
+node n7 {
+    type router
+    model PC
+    network-config {
+	hostname UPF
+	!
+	interface eth0
+	 ip address 10.0.1.26/24
+	!
+	interface eth1
+	 ip address 10.0.2.21/24
+	!
+	interface eth2
+	 ip address 10.0.3.20/24
+	 mac address 00:00:00:aa:00:13
+	!
+    }
+    canvas c1
+    iconcoords {609.0 574.0}
+    labelcoords {609.0 606.0}
+    services {UPF IPForward}
+    interface-peer {eth2 n11}
+    custom-config {
+	custom-config-id service:UPF
+	custom-command UPF
+	config {
+	files=('/etc/open5gs/upf.yaml', )
+	cmdup=('open5gs-upfd', 'ip addr add 10.45.0.1/16 dev ogstun', 'ip link set ogstun up', 'iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE', )
+	starttime=
+	}
+    }
+    custom-config {
+	custom-config-id service:UPF:/etc/open5gs/upf.yaml
+	custom-command /etc/open5gs/upf.yaml
+	config {
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,pfcp,gtp,upf,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/upf.log
+	#    level: debug
+	
+	#
+	# upf:
+	#
+	#  <PFCP Server>
+	#
+	#  o PFCP Server(127.0.0.7:8805, ::1:8805)
+	#    pfcp:
+	#      - addr: 127.0.0.7
+	#      - addr: ::1
+	#
+	#  o PFCP-U Server(127.0.0.1:2152, [::1]:2152)
+	#    pfcp:
+	#      name: localhost
+	#
+	#  o PFCP Option (Default)
+	#    - so_bindtodevice : NULL
+	#
+	#    pfcp:
+	#      addr: 127.0.0.7
+	#      option:
+	#        so_bindtodevice: vrf-blue
+	#
+	#  <GTP-U Server>>
+	#
+	#  o GTP-U Server(127.0.0.7:2152, [::1]:2152)
+	#    gtpu:
+	#      - addr: 127.0.0.7
+	#      - addr: ::1
+	#
+	#  o GTP-U Server(127.0.0.1:2152, [::1]:2152)
+	#    gtpu:
+	#      name: localhost
+	#
+	#  o User Plane IP Resource information
+	#    gtpu:
+	#      - addr:
+	#        - 127.0.0.7
+	#        - ::1
+	#        teid_range_indication: 4
+	#        teid_range: 10
+	#        network_instance: internet
+	#        source_interface: 0
+	#      - addr: 127.0.10.4
+	#        teid_range_indication: 4
+	#        teid_range: 5
+	#        network_instance: ims
+	#        source_interface: 1
+	#
+	#  o Provide custom UPF GTP-U address to be advertised inside NGAP messages
+	#    gtpu:
+	#      - addr: 10.4.128.21
+	#        advertise: 172.24.15.30
+	#
+	#    gtpu:
+	#      - addr: 10.4.128.21
+	#        advertise:
+	#        - 127.0.0.1
+	#        - ::1
+	#
+	#    gtpu:
+	#      - addr: 10.4.128.21
+	#        advertise: upf1.5gc.mnc001.mcc001.3gppnetwork.org
+	#
+	#    gtpu:
+	#      - dev: ens3
+	#        advertise: upf1.5gc.mnc001.mcc001.3gppnetwork.org
+	#
+	#  o GTP-U Option (Default)
+	#    - so_bindtodevice : NULL
+	#
+	#    gtpu:
+	#      addr: 127.0.0.7
+	#      option:
+	#        so_bindtodevice: vrf-blue
+	#
+	#  <Subnet for UE network>
+	#
+	#  Note that you need to setup your UE network using TUN device.
+	#  (ogstun, ogstun2, ogstunX, ..)
+	#
+	#  o IPv4 Pool
+	#    $ sudo ip addr add 10.45.0.1/16 dev ogstun
+	#
+	#    subnet:
+	#      addr: 10.45.0.1/16
+	#
+	#  o IPv4/IPv6 Pool
+	#    $ sudo ip addr add 10.45.0.1/16 dev ogstun
+	#    $ sudo ip addr add 2001:db8:cafe::1/48 dev ogstun
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/16
+	#      - addr: 2001:db8:cafe::1/48
+	#
+	#
+	#  o Specific DNN/APN(e.g 'ims') uses 10.46.0.1/16, 2001:db8:babe::1/48
+	#    All other APNs use 10.45.0.1/16, 2001:db8:cafe::1/48
+	#    $ sudo ip addr add 10.45.0.1/16 dev ogstun
+	#    $ sudo ip addr add 10.46.0.1/16 dev ogstun
+	#    $ sudo ip addr add 2001:db8:cafe::1/48 dev ogstun
+	#    $ sudo ip addr add 2001:db8:babe::1/48 dev ogstun
+	#
+	#    ; If the UE has unknown DNN/APN(not internet/ims), SMF/UPF will crash.
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/16
+	#        dnn: internet
+	#      - addr: 2001:db8:cafe::1/48
+	#        dnn: internet
+	#      - addr: 10.46.0.1/16
+	#        dnn: ims
+	#      - addr: 2001:db8:babe::1/48
+	#        dnn: ims
+	#
+	#  o Specific DNN/APN with the FALLBACK SUBNET(10.47.0.1/16)
+	#    ; Note that put the FALLBACK SUBNET last to avoid SMF/UPF crash.
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/16
+	#        dnn: internet
+	#      - addr: 10.46.0.1/16
+	#        dnn: ims
+	#      - addr: 10.50.0.1/16 ## FALLBACK SUBNET
+	#
+	#  o Multiple Devices (default: ogstun)
+	#    $ sudo ip addr add 10.45.0.1/16 dev ogstun
+	#    $ sudo ip addr add 2001:db8:cafe::1/48 dev ogstun2
+	#    $ sudo ip addr add 10.46.0.1/16 dev ogstun3
+	#    $ sudo ip addr add 2001:db8:babe::1/48 dev ogstun3
+	#
+	#    subnet:
+	#      - addr: 10.45.0.1/16
+	#        dnn: internet
+	#      - addr: 2001:db8:cafe::1/48
+	#        dnn: internet
+	#        dev: ogstun2
+	#      - addr: 10.46.0.1/16
+	#        dnn: ims
+	#        dev: ogstun3
+	#      - addr: 2001:db8:babe::1/48
+	#        dnn: ims
+	#        dev: ogstun3
+	#
+	upf:
+	    pfcp:
+	      - addr: 10.0.1.26
+	    gtpu:
+	      - addr: 10.0.2.21
+	    subnet:
+	      - addr: 10.45.0.1/16
+	        dnn: internet
+	        dev: ogstun
+	
+	#
+	# smf:
+	#
+	#  <PFCP Client>>
+	#
+	#  o PFCP Client(127.0.0.4:8805)
+	#
+	#    pfcp:
+	#      addr: 127.0.0.4
+	#
+	smf:
+	
+	#
+	# parameter:
+	#
+	#  o Number of output streams per SCTP associations.
+	#      sctp_streams: 30
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	time:
+	
+	}
+    }
+    interface-peer {eth1 n8}
+    interface-peer {eth0 n10}
+}
+
+node n8 {
+    type router
+    model PC
+    network-config {
+	hostname gNB
+	!
+	interface eth0
+	 ip address 10.0.1.27/24
+	!
+	interface eth2
+	 ip address 10.0.2.20/24
+	!
+	interface eth1
+	 ip address 10.0.0.21/24
+	!
+    }
+    canvas c1
+    iconcoords {271.0 574.0}
+    labelcoords {271.0 606.0}
+    services {GNB}
+    custom-config {
+	custom-config-id service:GNB
+	custom-command GNB
+	config {
+	files=('gnb.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:GNB:gnb.conf
+	custom-command gnb.conf
+	config {
+	mcc: '001'          # Mobile Country Code value
+	mnc: '01'           # Mobile Network Code value (2 or 3 digits)
+	
+	nci: '0x000000010'  # NR Cell Identity (36-bit)
+	idLength: 32        # NR gNB ID length in bits [22...32]
+	tac: 1              # Tracking Area Code
+	
+	linkIp: 10.0.0.21   # gNB's local IP address for Radio Link Simulation (Usually same with local IP)
+	ngapIp: 10.0.1.27   # gNB's local IP address for N2 Interface (Usually same with local IP)
+	gtpIp: 10.0.2.20   # gNB's local IP address for N3 Interface (Usually same with local IP)
+	
+	# List of AMF address information
+	amfConfigs:
+	  - address: 10.0.1.20
+	    port: 38412
+	
+	# List of supported S-NSSAIs by this gNB
+	slices:
+	  - sst: 1
+	
+	# Indicates whether or not SCTP stream number errors should be ignored.
+	ignoreStreamIds: true
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	# auto-generated by DefaultRoute service (utility.py)
+	ip route add default via 10.0.1.26
+	
+	
+	}
+    }
+    interface-peer {eth1 n9}
+    interface-peer {eth2 n7}
+    interface-peer {eth0 n10}
+}
+
+node n9 {
+    type router
+    model PC
+    network-config {
+	hostname UE
+	!
+	interface eth0
+	 ip address 10.0.0.20/24
+	!
+    }
+    canvas c1
+    iconcoords {39.0 650.0}
+    labelcoords {39.0 682.0}
+    services {UE}
+    custom-config {
+	custom-config-id service:UE
+	custom-command UE
+	config {
+	files=('ue.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UE:ue.conf
+	custom-command ue.conf
+	config {
+	# IMSI number of the UE. IMSI = [MCC|MNC|MSISDN] (In total 15 digits)
+	supi: 'imsi-001010000000001'
+	# Mobile Country Code value of HPLMN
+	mcc: '001'
+	# Mobile Network Code value of HPLMN (2 or 3 digits)
+	mnc: '01'
+	
+	# Permanent subscription key
+	key: '465B5CE8B199B49FAA5F0A2EE238A6BC'
+	# Operator code (OP or OPC) of the UE
+	op: 'E8ED289DEBA952E4283B54E88E6183CA'
+	# This value specifies the OP type and it can be either 'OP' or 'OPC'
+	opType: 'OPC'
+	# Authentication Management Field (AMF) value
+	amf: '8000'
+	# IMEI number of the device. It is used if no SUPI is provided
+	imei: '356938035643803'
+	# IMEISV number of the device. It is used if no SUPI and IMEI is provided
+	imeiSv: '4370816125816151'
+	
+	# List of gNB IP addresses for Radio Link Simulation
+	gnbSearchList:
+	  - 10.0.0.21
+	
+	# UAC Access Identities Configuration
+	uacAic:
+	  mps: false
+	  mcs: false
+	
+	# UAC Access Control Class
+	uacAcc:
+	  normalClass: 0
+	  class11: false
+	  class12: false
+	  class13: false
+	  class14: false
+	  class15: false
+	
+	# Initial PDU sessions to be established
+	sessions:
+	  - type: 'IPv4'
+	    apn: 'internet'
+	    slice:
+	      sst: 1
+	
+	# Configured NSSAI for this UE by HPLMN
+	configured-nssai:
+	  - sst: 1
+	
+	# Default Configured NSSAI for this UE
+	default-nssai:
+	  - sst: 1
+	#    sd: 0
+	
+	# Supported integrity algorithms by this UE
+	integrity:
+	  IA1: true
+	  IA2: true
+	  IA3: true
+	
+	# Supported encryption algorithms by this UE
+	ciphering:
+	  EA1: true
+	  EA2: true
+	  EA3: true
+	
+	# Integrity protection maximum data rate for user plane
+	integrityMaxRate:
+	  uplink: 'full'
+	  downlink: 'full'
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	# auto-generated by DefaultRoute service (utility.py)
+	ip route add default via 10.0.0.21
+	ip route add default via 2001::1
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	dirs=()
+	files=('defaultroute.sh',)
+	startidx=0
+	cmdup=('bash defaultroute.sh',)
+	cmddown=()
+	cmdval=()
+	meta=None
+	starttime=0
+	}
+    }
+    interface-peer {eth0 n8}
+}
+
+node n11 {
+    type router
+    model PC
+    network-config {
+	hostname n11
+	!
+	interface eth0
+	 ip address 10.0.3.21/24
+	 mac address 00:00:00:aa:00:14
+	!
+    }
+    canvas c1
+    iconcoords {943.0 583.0}
+    labelcoords {943.0 615.0}
+    services {DefaultRoute HTTP}
+    interface-peer {eth0 n7}
+}
+
+node n13 {
+    type router
+    model PC
+    network-config {
+	hostname PCF
+	!
+	interface eth0
+	 ip address 10.0.1.29/24
+	!
+    }
+    canvas c1
+    iconcoords {655.6666666666666 303.3333333333333}
+    labelcoords {655.6666666666666 335.3333333333333}
+    custom-config {
+	custom-config-id service:PCF
+	custom-command PCF
+	config {
+	files=('/etc/open5gs/pcf.yaml', )
+	cmdval=('pidof open5gs-pcfd', )
+	starttime=
+	}
+    }
+    custom-config {
+	custom-config-id service:PCF:/etc/open5gs/pcf.yaml
+	custom-command /etc/open5gs/pcf.yaml
+	config {
+	db_uri: mongodb://10.0.1.40:27017/open5gs
+	
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,sbi,pcf,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/pcf.log
+	#
+	# pcf:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:80)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#      - tls:
+	#          key: pcf.key
+	#          pem: pcf.pem
+	#
+	#  o SBI Server(https://127.0.0.13:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.13
+	#        tls:
+	#          key: pcf.key
+	#          pem: pcf.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://pcf.open5gs.org:80)
+	#    sbi:
+	#      - name: pcf.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.13:7777)
+	#    sbi:
+	#      - addr: 127.0.0.13
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      - dev: eth0
+	#
+	#  o Provide custom SBI address to be advertised to NRF
+	#    sbi:
+	#      - dev: eth0
+	#        advertise: open5gs-pcf.svc.local
+	#
+	#    sbi:
+	#      - addr: localhost
+	#        advertise:
+	#          - 127.0.0.99
+	#          - ::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.13
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	pcf:
+	    sbi:
+	      - addr: 10.0.1.29
+	        port: 7777
+	
+	#
+	# nrf:
+	#
+	#  <SBI Client>>
+	#
+	#  o SBI Client(http://127.0.0.10:7777)
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      port: 7777
+	#
+	#  o SBI Client(https://127.0.0.10:443, http://nrf.open5gs.org:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - name: nrf.open5gs.org
+	#
+	#  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)
+	#    If prefer_ipv4 is true, http://127.0.0.10:80 is selected.
+	#
+	#    sbi:
+	#      addr:
+	#        - 127.0.0.10
+	#        - fd69:f21d:873c:fa::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	nrf:
+	    sbi:
+	      - addr: 10.0.1.21
+	        port: 7777
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 0)
+	#    NFs will not send heart-beat timer in NFProfile
+	#    NRF will send heart-beat timer in NFProfile
+	#
+	#  o NF Instance Heartbeat (20 seconds)
+	#    NFs will send heart-beat timer (20 seconds) in NFProfile
+	#    NRF can change heart-beat timer in NFProfile
+	#
+	#    nf_instance:
+	#      heartbeat: 20
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	time:
+	
+	}
+    }
+    services {PCF}
+    interface-peer {eth0 n10}
+}
+
+node n14 {
+    type router
+    model PC
+    network-config {
+	hostname NSSF
+	!
+	interface eth0
+	 ip address 10.0.1.31/24
+	!
+    }
+    canvas c1
+    iconcoords {669.0 348.0}
+    labelcoords {669.0 380.0}
+    custom-config {
+	custom-config-id service:NSSF
+	custom-command NSSF
+	config {
+	files=('/etc/open5gs/nssf.yaml', )
+	}
+    }
+    custom-config {
+	custom-config-id service:NSSF:/etc/open5gs/nssf.yaml
+	custom-command /etc/open5gs/nssf.yaml
+	config {
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,sbi,nssf,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/nssf.log
+	#    level: debug
+	#
+	# nssf:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:80)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#      - tls:
+	#          key: nssf.key
+	#          pem: nssf.pem
+	#
+	#  o SBI Server(https://127.0.0.14:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.14
+	#        tls:
+	#          key: nssf.key
+	#          pem: nssf.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://nssf.open5gs.org:80)
+	#    sbi:
+	#      - name: nssf.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.14:7777)
+	#    sbi:
+	#      - addr: 127.0.0.14
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      - dev: eth0
+	#
+	#  o Provide custom SBI address to be advertised to NRF
+	#    sbi:
+	#      - dev: eth0
+	#        advertise: open5gs-nssf.svc.local
+	#
+	#    sbi:
+	#      - addr: localhost
+	#        advertise:
+	#          - 127.0.0.99
+	#          - ::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.14
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	#  <List of avaiable Network Slice Instance(NSI)>
+	#
+	#  o One NSI
+	#   - NRF[http://::1:7777/nnrf-nfm/v1/nf-instances]
+	#     NSSAI[SST:1]
+	#
+	#    nsi:
+	#      - addr: ::1
+	#        port: 7777
+	#        s_nssai:
+	#          sst: 1
+	#
+	#  o Three NSI
+	#   1. NRF[http://::1:7777/nnrf-nfm/v1/nf-instances]
+	#      S-NSSAI[SST:1]
+	#
+	#   2. NRF[http://127.0.0.19:7777/nnrf-nfm/v1/nf-instances]
+	#      NSSAI[SST:1, SD:000080]
+	#
+	#   2. NRF[http://127.0.0.10:7777/nnrf-nfm/v1/nf-instances]
+	#      NSSAI[SST:1, SD:009000]
+	#
+	#    nsi:
+	#      - addr: ::1
+	#        port: 7777
+	#        s_nssai:
+	#          sst: 1
+	#      - addr: 127.0.0.19
+	#        port: 7777
+	#        s_nssai:
+	#          sst: 1
+	#          sd: 000080
+	#      - addr: 127.0.0.10
+	#        port: 7777
+	#        s_nssai:
+	#          sst: 1
+	#          sd: 009000
+	#
+	#  o NSI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    nsi:
+	#      addr: ::1
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	nssf:
+	    sbi:
+	      - addr: 10.0.1.31
+	        port: 7777
+	    nsi:
+	      - addr: 10.0.1.31
+	        port: 7777
+	        s_nssai:
+	          sst: 1
+	
+	#
+	# nrf:
+	#
+	#  <SBI Client>>
+	#
+	#  o SBI Client(http://127.0.0.10:7777)
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      port: 7777
+	#
+	#  o SBI Client(https://127.0.0.10:443, http://nrf.open5gs.org:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - name: nrf.open5gs.org
+	#
+	#  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)
+	#    If prefer_ipv4 is true, http://127.0.0.10:80 is selected.
+	#
+	#    sbi:
+	#      addr:
+	#        - 127.0.0.10
+	#        - fd69:f21d:873c:fa::1
+	#
+	nrf:
+	    sbi:
+	      - addr: 10.0.1.21
+	        port: 7777
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 0)
+	#    NFs will not send heart-beat timer in NFProfile
+	#    NRF will send heart-beat timer in NFProfile
+	#
+	#  o NF Instance Heartbeat (20 seconds)
+	#    NFs will send heart-beat timer (20 seconds) in NFProfile
+	#    NRF can change heart-beat timer in NFProfile
+	#
+	#    nf_instance:
+	#      heartbeat: 20
+	#
+	#  o NF Instance Heartbeat (Disabled)
+	#    nf_instance:
+	#      heartbeat: 0
+	#
+	#  o NF Instance Heartbeat (10 seconds)
+	#    nf_instance:
+	#      heartbeat: 10
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	time:
+	
+	}
+    }
+    services {NSSF}
+    interface-peer {eth0 n10}
+}
+
+node n15 {
+    type router
+    model PC
+    network-config {
+	hostname BSF
+	!
+	interface eth0
+	 ip address 10.0.1.32/24
+	!
+    }
+    canvas c1
+    iconcoords {667.0 406.6666666666667}
+    labelcoords {667.0 438.6666666666667}
+    custom-config {
+	custom-config-id service:BSF
+	custom-command BSF
+	config {
+	files=('/etc/open5gs/bsf.yaml', )
+	}
+    }
+    custom-config {
+	custom-config-id service:BSF:/etc/open5gs/bsf.yaml
+	custom-command /etc/open5gs/bsf.yaml
+	config {
+	db_uri: mongodb://10.0.1.40:27017/open5gs
+	
+	#
+	# logger:
+	#
+	#  o Set OGS_LOG_INFO to all domain level
+	#   - If `level` is omitted, the default level is OGS_LOG_INFO)
+	#   - If `domain` is omitted, the all domain level is set from 'level'
+	#    (Nothing is needed)
+	#
+	#  o Set OGS_LOG_ERROR to all domain level
+	#   - `level` can be set with none, fatal, error, warn, info, debug, trace
+	#    level: error
+	#
+	#  o Set OGS_LOG_DEBUG to mme/emm domain level
+	#    level: debug
+	#    domain: mme,emm
+	#
+	#  o Set OGS_LOG_TRACE to all domain level
+	#    level: trace
+	#    domain: core,sbi,bsf,event,tlv,mem,sock
+	#
+	logger:
+	    file: /var/log/open5gs/bsf.log
+	#
+	# bsf:
+	#
+	#  <SBI Server>
+	#
+	#  o SBI Server(http://<all address available>:80)
+	#    sbi:
+	#
+	#  o SBI Server(http://<any address>:80)
+	#    sbi:
+	#      - addr:
+	#          - 0.0.0.0
+	#          - ::0
+	#        port: 7777
+	#
+	#  o SBI Server(https://<all address avaiable>:443)
+	#    sbi:
+	#      - tls:
+	#          key: bsf.key
+	#          pem: bsf.pem
+	#
+	#  o SBI Server(https://127.0.0.15:443, http://[::1]:80)
+	#    sbi:
+	#      - addr: 127.0.0.15
+	#        tls:
+	#          key: bsf.key
+	#          pem: bsf.pem
+	#      - addr: ::1
+	#
+	#  o SBI Server(http://bsf.open5gs.org:80)
+	#    sbi:
+	#      - name: bsf.open5gs.org
+	#
+	#  o SBI Server(http://127.0.0.15:7777)
+	#    sbi:
+	#      - addr: 127.0.0.15
+	#        port: 7777
+	#
+	#  o SBI Server(http://<eth0 IP address>:80)
+	#    sbi:
+	#      - dev: eth0
+	#
+	#  o Provide custom SBI address to be advertised to NRF
+	#    sbi:
+	#      - dev: eth0
+	#        advertise: open5gs-bsf.svc.local
+	#
+	#    sbi:
+	#      - addr: localhost
+	#        advertise:
+	#          - 127.0.0.99
+	#          - ::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.15
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	bsf:
+	    sbi:
+	      - addr: 10.0.1.32
+	        port: 7777
+	
+	#
+	# nrf:
+	#
+	#  <SBI Client>>
+	#
+	#  o SBI Client(http://127.0.0.10:7777)
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      port: 7777
+	#
+	#  o SBI Client(https://127.0.0.10:443, http://nrf.open5gs.org:80)
+	#    sbi:
+	#      - addr: 127.0.0.10
+	#        tls:
+	#          key: nrf.key
+	#          pem: nrf.pem
+	#      - name: nrf.open5gs.org
+	#
+	#  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)
+	#    If prefer_ipv4 is true, http://127.0.0.10:80 is selected.
+	#
+	#    sbi:
+	#      addr:
+	#        - 127.0.0.10
+	#        - fd69:f21d:873c:fa::1
+	#
+	#  o SBI Option (Default)
+	#    - tcp_nodelay : true
+	#    - so_linger.l_onoff : false
+	#
+	#    sbi:
+	#      addr: 127.0.0.10
+	#      option:
+	#        tcp_nodelay: false
+	#        so_linger:
+	#          l_onoff: true
+	#          l_linger: 10
+	#
+	nrf:
+	    sbi:
+	      - addr: 10.0.1.21
+	        port: 7777
+	
+	#
+	# parameter:
+	#
+	#  o Disable use of IPv4 addresses (only IPv6)
+	#      no_ipv4: true
+	#
+	#  o Disable use of IPv6 addresses (only IPv4)
+	#      no_ipv6: true
+	#
+	#  o Prefer IPv4 instead of IPv6 for estabishing new GTP connections.
+	#      prefer_ipv4: true
+	#
+	parameter:
+	
+	#
+	# max:
+	#
+	# o Maximum Number of UE per AMF/MME
+	#    ue: 1024
+	# o Maximum Number of gNB/eNB per AMF/MME
+	#    gnb: 64
+	#
+	max:
+	
+	#
+	# time:
+	#
+	#  o NF Instance Heartbeat (Default : 0)
+	#    NFs will not send heart-beat timer in NFProfile
+	#    NRF will send heart-beat timer in NFProfile
+	#
+	#  o NF Instance Heartbeat (20 seconds)
+	#    NFs will send heart-beat timer (20 seconds) in NFProfile
+	#    NRF can change heart-beat timer in NFProfile
+	#
+	#    nf_instance:
+	#      heartbeat: 20
+	#
+	#  o Message Wait Duration (Default : 10,000 ms = 10 seconds)
+	#
+	#  o Message Wait Duration (3000 ms)
+	#    message:
+	#        duration: 3000
+	time:
+	
+	}
+    }
+    services {BSF}
+    interface-peer {eth0 n10}
+}
+
+node n16 {
+    type router
+    model PC
+    network-config {
+	hostname MongoDB
+	!
+	interface eth0
+	 ip address 10.0.1.40/24
+	!
+    }
+    canvas c1
+    iconcoords {90.0 261.0}
+    labelcoords {92.0 302.0}
+    services {MongoDB}
+    custom-config {
+	custom-config-id service:MongoDB
+	custom-command MongoDB
+	config {
+	files=('/etc/mongo/mongodb.conf', 'start_mongo.sh', )
+	startidx=9
+	cmdup=('sh start_mongo.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:MongoDB:/etc/mongo/mongodb.conf
+	custom-command /etc/mongo/mongodb.conf
+	config {
+	# mongodb.conf
+	
+	# Where to store the data.
+	dbpath=/data/db
+	
+	#where to log
+	logpath=/var/log/mongodb/mongodb.log
+	
+	logappend=true
+	
+	bind_ip = 127.0.0.1, 10.0.1.40
+	#bind_ip = 127.0.0.1
+	#port = 27017
+	
+	# Enable journaling, http://www.mongodb.org/display/DOCS/Journaling
+	journal=true
+	
+	# Enables periodic logging of CPU utilization and I/O wait
+	#cpu = true
+	
+	# Turn on/off security.  Off is currently the default
+	#noauth = true
+	#auth = true
+	
+	# Verbose logging output.
+	#verbose = true
+	
+	# Inspect all client data for validity on receipt (useful for
+	# developing drivers)
+	#objcheck = true
+	
+	# Enable db quota management
+	#quota = true
+	
+	# Set diagnostic logging level where n is
+	#   0=off (default)
+	#   1=W
+	#   2=R
+	#   3=both
+	#   7=W+some reads
+	#diaglog = 0
+	
+	# Diagnostic/debugging option
+	#nocursors = true
+	
+	# Ignore query hints
+	#nohints = true
+	
+	# Disable the HTTP interface (Defaults to localhost:27018).
+	#nohttpinterface = true
+	
+	# Turns off server-side scripting.  This will result in greatly limited
+	# functionality
+	#noscripting = true
+	
+	# Turns off table scans.  Any query that would do a table scan fails.
+	#notablescan = true
+	
+	# Disable data file preallocation.
+	#noprealloc = true
+	
+	# Specify .ns file size for new databases.
+	# nssize = <size>
+	
+	# Accout token for Mongo monitoring server.
+	#mms-token = <token>
+	
+	# Server name for Mongo monitoring server.
+	#mms-name = <server-name>
+	
+	# Ping interval for Mongo monitoring server.
+	#mms-interval = <seconds>
+	
+	# Replication Options
+	
+	# in replicated mongo databases, specify here whether this is a slave or master
+	#slave = true
+	#source = master.example.com
+	# Slave only: specify a single database to replicate
+	#only = master.example.com
+	# or
+	#master = true
+	#source = slave.example.com
+	
+	# Address of a server to pair with.
+	#pairwith = <server:port>
+	# Address of arbiter server.
+	#arbiter = <server:port>
+	# Automatically resync if slave data is stale
+	#autoresync
+	# Custom size for replication operation log.
+	#oplogSize = <MB>
+	# Size limit for in-memory storage of op ids.
+	#opIdMem = <bytes>
+	
+	# SSL options
+	# Enable SSL on normal ports
+	#sslOnNormalPorts = true
+	# SSL Key file and password
+	#sslPEMKeyFile = /etc/ssl/mongodb.pem
+	#sslPEMKeyPassword = pass
+	
+	        
+	}
+    }
+    interface-peer {eth0 n10}
+}
+
+node n10 {
+    type lanswitch
+    network-config {
+	hostname n10
+	!
+    }
+    canvas c1
+    iconcoords {475.3333333333333 360.0}
+    labelcoords {475.3333333333333 384.0}
+    interface-peer {e0 n1}
+    interface-peer {e1 n2}
+    interface-peer {e2 n3}
+    interface-peer {e3 n4}
+    interface-peer {e4 n5}
+    interface-peer {e5 n6}
+    interface-peer {e6 n13}
+    interface-peer {e7 n14}
+    interface-peer {e8 n15}
+    interface-peer {e9 n7}
+    interface-peer {e10 n8}
+    interface-peer {e11 n16}
+}
+
+link l12 {
+    nodes {n7 n11}
+}
+
+link l11 {
+    nodes {n9 n8}
+    bandwidth 0
+}
+
+link l16 {
+    nodes {n8 n7}
+    bandwidth 0
+}
+
+link l1 {
+    nodes {n1 n10}
+    bandwidth 0
+}
+
+link l2 {
+    nodes {n2 n10}
+    bandwidth 0
+}
+
+link l3 {
+    nodes {n3 n10}
+    bandwidth 0
+}
+
+link l4 {
+    nodes {n4 n10}
+    bandwidth 0
+}
+
+link l5 {
+    nodes {n5 n10}
+    bandwidth 0
+}
+
+link l6 {
+    nodes {n6 n10}
+    bandwidth 0
+}
+
+link l7 {
+    nodes {n13 n10}
+    bandwidth 0
+}
+
+link l8 {
+    nodes {n14 n10}
+    bandwidth 0
+}
+
+link l9 {
+    nodes {n15 n10}
+    bandwidth 0
+}
+
+link l10 {
+    nodes {n7 n10}
+    bandwidth 0
+}
+
+link l13 {
+    nodes {n8 n10}
+    bandwidth 0
+}
+
+link l14 {
+    nodes {n16 n10}
+    bandwidth 0
+}
+
+annotation a1 {
+    iconcoords {45.0 470.0}
+    type text
+    label {./UERANSIM/build/nr-gnb -c gnb.conf}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    effects {bold}
+    canvas c1
+}
+
+annotation a2 {
+    iconcoords {225.0 652.0}
+    type text
+    label {1. Terminal: ./UERANSIM/build/nr-ue -c ue.conf (warten bis tun erstellt wird! Wenn Probleme dann Session neustarten, da Datenbank Probleme macht!)}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    effects {bold}
+    canvas c1
+}
+
+annotation a3 {
+    type text
+    iconcoords {483.0 660.0}
+    label {}
+    canvas c1
+}
+
+annotation a4 {
+    type text
+    iconcoords {635.0 744.0}
+    label {}
+    canvas c1
+}
+
+annotation a5 {
+    type text
+    iconcoords {543.0 634.0}
+    label {}
+    canvas c1
+}
+
+annotation a6 {
+    iconcoords {225.0 676.0}
+    type text
+    label {2. Terminal: ip route add default dev uesimtun0}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    effects {bold}
+    canvas c1
+}
+
+annotation a7 {
+    type text
+    iconcoords {561.0 662.0}
+    label {}
+    canvas c1
+}
+
+canvas c1 {
+    name {Canvas1}
+}
+
+canvas c2 {
+    name {Canvas2}
+}
+
+option global {
+    interface_names yes
+    ip_addresses yes
+    ipv6_addresses yes
+    node_labels yes
+    link_labels yes
+    show_api no
+    background_images no
+    annotations yes
+    grid yes
+    traffic_start 0
+}
+
+option session {
+    controlnet=172.10.0.0/16
+    controlnet0=
+    controlnet1=
+    controlnet2=
+    controlnet3=
+    controlnet_updown_script=
+    enablerj45=1
+    enablesdt=0
+    link_enabled=1
+    link_interval=1
+    link_timeout=4
+    loss_threshold=30
+    mtu=0
+    nem_id_start=1
+    ovs=0
+    platform_id_start=1
+    preservedir=0
+    sdturl=tcp://127.0.0.1:50000/
+}
+
