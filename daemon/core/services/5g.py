@@ -42,8 +42,8 @@ class AMFService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-amfd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ('/etc/open5gs', '/var/log/open5gs',)
-    configs: Tuple[str, ...] = ('/etc/open5gs/amf.yaml',)
-    startup: Tuple[str, ...] = ("open5gs-amfd -D",)
+    configs: Tuple[str, ...] = ('/etc/open5gs/amf.yaml', 'start_amf.sh')
+    startup: Tuple[str, ...] = ("sh start_amf.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -83,7 +83,9 @@ class AMFService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """# logger:
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """# logger:
 #
 #  o Set OGS_LOG_INFO to all domain level
 #   - If `level` is omitted, the default level is OGS_LOG_INFO)
@@ -441,7 +443,10 @@ usrsctp:
 #        duration: 500
 time:
 """
-
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+open5gs-amfd -D
+"""
         return cfg
 
     @classmethod
@@ -475,8 +480,8 @@ class AUSFService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-ausfd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ('/etc/open5gs', '/var/log/open5gs',)
-    configs: Tuple[str, ...] = ('/etc/open5gs/ausf.yaml',)
-    startup: Tuple[str, ...] = ("open5gs-ausfd",)
+    configs: Tuple[str, ...] = ('/etc/open5gs/ausf.yaml', 'start_ausf.sh')
+    startup: Tuple[str, ...] = ("sh start_ausf.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -516,7 +521,9 @@ class AUSFService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """#
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """#
 # logger:
 #
 #  o Set OGS_LOG_INFO to all domain level
@@ -696,6 +703,10 @@ max:
 #        duration: 3000
 time:
 """
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+open5gs-ausfd -D      
+"""
 
         return cfg
 
@@ -730,8 +741,8 @@ class BSFService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-bsfd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ('/etc/open5gs', '/var/log/open5gs',)
-    configs: Tuple[str, ...] = ('/etc/open5gs/bsf.yaml',)
-    startup: Tuple[str, ...] = ("open5gs-bsfd",)
+    configs: Tuple[str, ...] = ('/etc/open5gs/bsf.yaml', 'start_bsf.sh',)
+    startup: Tuple[str, ...] = ("sh start_bsf.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -771,8 +782,9 @@ class BSFService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """#
-db_uri: mongodb://<IP OF MONGODB HERE>:27017/open5gs
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """db_uri: mongodb://<IP OF MONGODB HERE>:27017/open5gs
 
 #
 # logger:
@@ -954,7 +966,14 @@ max:
 #        duration: 3000
 time:
 """
-
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+# Block start of Network Function until MongoDB has correctly started
+while ! nc -z <IP of MongoDB> <Port of MongoDB (default: 27017)>; do
+ sleep 0.5
+done
+open5gs-bsfd -D
+            """
         return cfg
 
     @classmethod
@@ -988,8 +1007,8 @@ class NRFService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-nrfd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ("/etc/open5gs", "/var/log/open5gs/")
-    configs: Tuple[str, ...] = ("/etc/open5gs/nrf.yaml",)
-    startup: Tuple[str, ...] = ("open5gs-nrfd",)
+    configs: Tuple[str, ...] = ("/etc/open5gs/nrf.yaml", "start_nrf.sh")
+    startup: Tuple[str, ...] = ("sh start_nrf.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -1029,7 +1048,9 @@ class NRFService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """db_uri: mongodb://<IP OF MONGODB HERE>:27017/open5gs
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """db_uri: mongodb://<IP OF MONGODB HERE>:27017/open5gs
 
 #
 # logger:
@@ -1173,7 +1194,13 @@ max:
 #        duration: 3000
 time:
 """
-
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+while ! nc -z <IP of MongoDB> <Port of MongoDB (default: 27017)>; do
+ sleep 0.5
+done
+open5gs-nrfd -D
+"""
         return cfg
 
     @classmethod
@@ -1207,8 +1234,8 @@ class NSSFService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-nssfd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ("/etc/open5gs", "/var/log/open5gs/",)
-    configs: Tuple[str, ...] = ("/etc/open5gs/nssf.yaml",)
-    startup: Tuple[str, ...] = ("open5gs-nssfd",)
+    configs: Tuple[str, ...] = ("/etc/open5gs/nssf.yaml", "start_nssf.sh")
+    startup: Tuple[str, ...] = ("sh start_nssf.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -1248,7 +1275,9 @@ class NSSFService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """#
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """#
 # logger:
 #
 #  o Set OGS_LOG_INFO to all domain level
@@ -1479,6 +1508,10 @@ max:
 time:
 """
 
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+open5gs-nssfd -D
+"""
         return cfg
 
     @classmethod
@@ -1512,8 +1545,8 @@ class PCFService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-pcfd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ("/etc/open5gs", "/var/log/open5gs",)
-    configs: Tuple[str, ...] = ("/etc/open5gs/pcf.yaml",)
-    startup: Tuple[str, ...] = ("open5gs-pcfd",)
+    configs: Tuple[str, ...] = ("/etc/open5gs/pcf.yaml", "start_pcf.sh")
+    startup: Tuple[str, ...] = ("sh start_pcf.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -1553,7 +1586,9 @@ class PCFService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """db_uri: mongodb://<IP OF MONGODB HERE>:27017/open5gs
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """db_uri: mongodb://<IP OF MONGODB HERE>:27017/open5gs
 
 #
 # logger:
@@ -1735,7 +1770,13 @@ max:
 #        duration: 3000
 time:
 """
-
+        elif filename == cls.configs[1]:
+            cfg += """"#!/bin/sh
+while ! nc -z <IP of MongoDB> <Port of MongoDB (default: 27017)>; do
+ sleep 0.5
+done
+open5gs-pcfd -D
+"""
         return cfg
 
     @classmethod
@@ -1769,8 +1810,8 @@ class SMFService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-smfd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ("/etc/open5gs", "/var/log/open5gs",)
-    configs: Tuple[str, ...] = ("/etc/open5gs/smf.yaml",)
-    startup: Tuple[str, ...] = ("open5gs-smfd",)
+    configs: Tuple[str, ...] = ("/etc/open5gs/smf.yaml","start_smf.sh")
+    startup: Tuple[str, ...] = ("sh start_smf.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -1810,7 +1851,9 @@ class SMFService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """#
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """#
 # logger:
 #
 #  o Set OGS_LOG_INFO to all domain level
@@ -2380,6 +2423,10 @@ max:
 time:
 """
 
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+open5gs-smfd -D            
+"""
         return cfg
 
     @classmethod
@@ -2413,8 +2460,9 @@ class UDMService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-udmd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ("/etc/open5gs", "/var/log/open5gs",)
-    configs: Tuple[str, ...] = ("/etc/open5gs/udm.yaml",)
-    startup: Tuple[str, ...] = ("open5gs-udmd",)
+    configs: Tuple[str, ...] = ("/etc/open5gs/udm.yaml", "start_udmd.sh")
+    #startup: Tuple[str, ...] = ("open5gs-udmd",)
+    startup: Tuple[str, ...] = ("sh start_udmd.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -2454,7 +2502,9 @@ class UDMService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """#
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """#
 # logger:
 #
 #  o Set OGS_LOG_INFO to all domain level
@@ -2634,7 +2684,10 @@ max:
 #        duration: 3000
 time:
 """
-
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+open5gs-udmd -D       
+"""
         return cfg
 
     @classmethod
@@ -2668,8 +2721,9 @@ class UDRService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-udrd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ("/etc/open5gs", "/var/log/open5gs/",)
-    configs: Tuple[str, ...] = ("/etc/open5gs/udr.yaml",)
-    startup: Tuple[str, ...] = ("open5gs-udrd",)
+    configs: Tuple[str, ...] = ("/etc/open5gs/udr.yaml", "start_udr.sh")
+    #startup: Tuple[str, ...] = ("open5gs-udrd",)
+    startup: Tuple[str, ...] = ("sh start_udr.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -2709,8 +2763,9 @@ class UDRService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """db_uri: mongodb://<IP OF MONGO>:27017/open5gs
-
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """db_uri: mongodb://<IP OF MONGODB HERE>:27017/open5gs
 #
 # logger:
 #
@@ -2899,7 +2954,13 @@ max:
 #        duration: 3000
 time:
 """
-
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+while ! nc -z <IP of MongoDB> <Port of MongoDB (default: 27017)>; do
+ sleep 0.5
+done
+open5gs-udrd -D       
+"""
         return cfg
 
     @classmethod
@@ -2933,8 +2994,9 @@ class UPFService(CoreService):
     executables: Tuple[str, ...] = ("open5gs-upfd",)
     dependencies: Tuple[str, ...] = ()
     dirs: Tuple[str, ...] = ("/etc/open5gs", "/var/log/open5gs",)
-    configs: Tuple[str, ...] = ("/etc/open5gs/upf.yaml",)
-    startup: Tuple[str, ...] = ("open5gs-upfd", "ip addr add 10.0.45.0.1/16 dev ogstun", "ip link set ogstun up", "iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE",)
+    configs: Tuple[str, ...] = ("/etc/open5gs/upf.yaml", "start_upf.sh",)
+    #startup: Tuple[str, ...] = ("open5gs-upfd", "ip addr add 10.0.45.0.1/16 dev ogstun", "ip link set ogstun up", "iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE",)
+    startup: Tuple[str, ...] = ("sh start_upf.sh",)
     validate: Tuple[str, ...] = ()
     validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
     validation_timer: int = 5
@@ -2974,7 +3036,9 @@ class UPFService(CoreService):
         :param filename: configuration file to generate
         :return: configuration file content
         """
-        cfg = """#
+        cfg = ""
+        if filename == cls.configs[0]:
+            cfg += """#
 # logger:
 #
 #  o Set OGS_LOG_INFO to all domain level
@@ -3199,7 +3263,13 @@ max:
 #        duration: 3000
 time:
 """
-
+        elif filename == cls.configs[1]:
+            cfg += """#!/bin/sh
+open5gs-upfd -D
+ip addr add 10.0.45.0.1/16 dev ogstun
+ip link set ogstun up
+iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE
+"""
         return cfg
 
     @classmethod
@@ -3225,7 +3295,6 @@ time:
         :return: tuple of commands to validate service startup with
         """
         return cls.validate
-
 
 class MongoService(CoreService):
     """
@@ -3440,3 +3509,83 @@ journal=true
         """
         return cls.validate
 
+class WebUIService(CoreService):
+
+    name: str = "WebUI"
+    group: str = GROUP_NAME
+    executables: Tuple[str, ...] = ( )
+    dependencies: Tuple[str, ...] = ()
+    dirs: Tuple[str, ...] = ( )
+    configs: Tuple[str, ...] = ("start_webui.sh",)
+    #startup: Tuple[str, ...] = ("open5gs-upfd", "ip addr add 10.0.45.0.1/16 dev ogstun", "ip link set ogstun up", "iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE",)
+    startup: Tuple[str, ...] = ("sh start_webui.sh",)
+    validate: Tuple[str, ...] = ()
+    validation_mode: ServiceMode = ServiceMode.NON_BLOCKING
+    validation_timer: int = 5
+    validation_period: float = 0.5
+    shutdown: Tuple[str, ...] = ()
+
+    @classmethod
+    def on_load(cls) -> None:
+        """
+        Provides a way to run some arbitrary logic when the service is loaded, possibly
+        to help facilitate dynamic settings for the environment.
+
+        :return: nothing
+        """
+        pass
+
+    @classmethod
+    def get_configs(cls, node: CoreNode) -> Tuple[str, ...]:
+        """
+        Provides a way to dynamically generate the config files from the node a service
+        will run. Defaults to the class definition and can be left out entirely if not
+        needed.
+
+        :param node: core node that the service is being ran on
+        :return: tuple of config files to create
+        """
+        return cls.configs
+
+    @classmethod
+    def generate_config(cls, node: CoreNode, filename: str) -> str:
+        """
+        Returns a string representation for a file, given the node the service is
+        starting on the config filename that this information will be used for. This
+        must be defined, if "configs" are defined.
+
+        :param node: core node that the service is being ran on
+        :param filename: configuration file to generate
+        :return: configuration file content
+        """
+        cfg = """#!/bin/sh
+cp -rf /home/gregor/open5gs-webui .
+export DB_URI="mongodb://<IP OF MONGODB>/open5gs"
+cd open5gs-webui
+npm run start
+"""
+        return cfg
+
+    @classmethod
+    def get_startup(cls, node: CoreNode) -> Tuple[str, ...]:
+        """
+        Provides a way to dynamically generate the startup commands from the node a
+        service will run. Defaults to the class definition and can be left out entirely
+        if not needed.
+
+        :param node: core node that the service is being ran on
+        :return: tuple of startup commands to run
+        """
+        return cls.startup
+
+    @classmethod
+    def get_validate(cls, node: CoreNode) -> Tuple[str, ...]:
+        """
+        Provides a way to dynamically generate the validate commands from the node a
+        service will run. Defaults to the class definition and can be left out entirely
+        if not needed.
+
+        :param node: core node that the service is being ran on
+        :return: tuple of commands to validate service startup with
+        """
+        return cls.validate
