@@ -9,15 +9,14 @@ node n1 {
 	!
     }
     canvas c1
-    iconcoords {196.0 115.0}
-    labelcoords {202.0 163.0}
+    iconcoords {140.0 137.0}
+    labelcoords {146.0 185.0}
     services {AMF}
     custom-config {
 	custom-config-id service:AMF
 	custom-command AMF
 	config {
-	files=('/etc/open5gs/amf.yaml', )
-	cmdup=('open5gs-amfd', )
+	files=('/etc/open5gs/amf.yaml', 'start_amf.sh', )
 	}
     }
     custom-config {
@@ -45,7 +44,6 @@ node n1 {
 	#
 	logger:
 	    file: /var/log/open5gs/amf.log
-	#    level: debug
 	#
 	# amf:
 	#
@@ -427,11 +425,24 @@ node n2 {
     iconcoords {302.0 52.0}
     labelcoords {302.0 84.0}
     services {NRF}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:NRF
 	custom-command NRF
 	config {
-	files=('/etc/open5gs/nrf.yaml', )
+	files=('/etc/open5gs/nrf.yaml', 'start_nrf.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:NRF:start_nrf.sh
+	custom-command start_nrf.sh
+	config {
+	#!/bin/sh
+	while ! nc -z 10.0.1.40 27017; do
+	 sleep 0.5
+	done
+	open5gs-nrfd -D
+	
 	}
     }
     custom-config {
@@ -519,8 +530,7 @@ node n2 {
 	#
 	nrf:
 	    sbi:
-	      addr:
-	        - 10.0.1.21
+	      addr: 10.0.1.21
 	      port: 7777
 	
 	#
@@ -585,7 +595,6 @@ node n2 {
 	
 	}
     }
-    interface-peer {eth0 n10}
 }
 
 node n3 {
@@ -602,11 +611,12 @@ node n3 {
     iconcoords {437.0 46.0}
     labelcoords {437.0 78.0}
     services {UDM}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:UDM
 	custom-command UDM
 	config {
-	files=('/etc/open5gs/udm.yaml', )
+	files=('/etc/open5gs/udm.yaml', 'start_udmd.sh', )
 	}
     }
     custom-config {
@@ -795,7 +805,6 @@ node n3 {
 	
 	}
     }
-    interface-peer {eth0 n10}
 }
 
 node n4 {
@@ -809,15 +818,27 @@ node n4 {
 	!
     }
     canvas c1
-    iconcoords {502.5 53.0}
-    labelcoords {502.5 85.0}
+    iconcoords {544.5 49.0}
+    labelcoords {544.5 81.0}
     services {UDR}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:UDR
 	custom-command UDR
 	config {
-	files=('/etc/open5gs/udr.yaml', )
-	starttime=
+	files=('/etc/open5gs/udr.yaml', 'start_udr.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UDR:start_udr.sh
+	custom-command start_udr.sh
+	config {
+	#!/bin/sh
+	while ! nc -z 10.0.1.40 27017; do
+	 sleep 0.5
+	done
+	open5gs-udrd -D       
+	
 	}
     }
     custom-config {
@@ -825,7 +846,6 @@ node n4 {
 	custom-command /etc/open5gs/udr.yaml
 	config {
 	db_uri: mongodb://10.0.1.40:27017/open5gs
-	
 	#
 	# logger:
 	#
@@ -1016,7 +1036,6 @@ node n4 {
 	
 	}
     }
-    interface-peer {eth0 n10}
 }
 
 node n5 {
@@ -1033,11 +1052,12 @@ node n5 {
     iconcoords {661.3333333333334 74.0}
     labelcoords {661.3333333333334 106.0}
     services {AUSF}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:AUSF
 	custom-command AUSF
 	config {
-	files=('/etc/open5gs/ausf.yaml', )
+	files=('/etc/open5gs/ausf.yaml', 'start_ausf.sh', )
 	}
     }
     custom-config {
@@ -1135,6 +1155,7 @@ node n5 {
 	    sbi:
 	      - addr: 10.0.1.24
 	        port: 7777
+	
 	#
 	# nrf:
 	#
@@ -1225,7 +1246,6 @@ node n5 {
 	
 	}
     }
-    interface-peer {eth0 n10}
 }
 
 node n6 {
@@ -1239,14 +1259,15 @@ node n6 {
 	!
     }
     canvas c1
-    iconcoords {663.0 222.33333333333334}
-    labelcoords {663.0 254.33333333333334}
+    iconcoords {729.0 178.33333333333334}
+    labelcoords {729.0 210.33333333333334}
     services {SMF}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:SMF
 	custom-command SMF
 	config {
-	files=('/etc/open5gs/smf.yaml', )
+	files=('/etc/open5gs/smf.yaml', 'start_smf.sh', )
 	}
     }
     custom-config {
@@ -1275,7 +1296,6 @@ node n6 {
 	#
 	logger:
 	    file: /var/log/open5gs/smf.log
-	#    level: debug
 	#
 	# smf:
 	#
@@ -1662,7 +1682,7 @@ node n6 {
 	              mcc: 001
 	              mnc: 01
 	            tac: 1
-	
+	#
 	# nrf:
 	#
 	#  <SBI Client>>
@@ -1825,7 +1845,6 @@ node n6 {
 	
 	}
     }
-    interface-peer {eth0 n10}
 }
 
 node n7 {
@@ -1850,13 +1869,26 @@ node n7 {
     labelcoords {609.0 606.0}
     services {UPF IPForward}
     interface-peer {eth2 n11}
+    interface-peer {eth1 n8}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:UPF
 	custom-command UPF
 	config {
-	files=('/etc/open5gs/upf.yaml', )
-	cmdup=('open5gs-upfd', 'ip addr add 10.45.0.1/16 dev ogstun', 'ip link set ogstun up', 'iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE', )
-	starttime=
+	files=('/etc/open5gs/upf.yaml', 'start_upf.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UPF:start_upf.sh
+	custom-command start_upf.sh
+	config {
+	#!/bin/sh
+	open5gs-upfd -D
+	sleep 3
+	ip addr add 10.45.0.1/16 dev ogstun
+	ip link set ogstun up
+	iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE
+	
 	}
     }
     custom-config {
@@ -1885,7 +1917,6 @@ node n7 {
 	#
 	logger:
 	    file: /var/log/open5gs/upf.log
-	#    level: debug
 	
 	#
 	# upf:
@@ -2091,8 +2122,6 @@ node n7 {
 	
 	}
     }
-    interface-peer {eth1 n8}
-    interface-peer {eth0 n10}
 }
 
 node n8 {
@@ -2119,7 +2148,19 @@ node n8 {
 	custom-config-id service:GNB
 	custom-command GNB
 	config {
-	files=('gnb.conf', )
+	files=('gnb.conf', 'start_gnb.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:GNB:start_gnb.sh
+	custom-command start_gnb.sh
+	config {
+	#!/bin/sh
+	while ! nc -z 10.0.1.20 7777; do
+	 sleep 0.5
+	done
+	nr-gnb -c gnb.conf
+	
 	}
     }
     custom-config {
@@ -2133,7 +2174,7 @@ node n8 {
 	idLength: 32        # NR gNB ID length in bits [22...32]
 	tac: 1              # Tracking Area Code
 	
-	linkIp: 10.0.0.21   # gNB's local IP address for Radio Link Simulation (Usually same with local IP)
+	linkIp: 10.0.0.21 # gNB's local IP address for Radio Link Simulation (Usually same with local IP)
 	ngapIp: 10.0.1.27   # gNB's local IP address for N2 Interface (Usually same with local IP)
 	gtpIp: 10.0.2.20   # gNB's local IP address for N3 Interface (Usually same with local IP)
 	
@@ -2192,7 +2233,24 @@ node n9 {
 	custom-config-id service:UE
 	custom-command UE
 	config {
-	files=('ue.conf', )
+	files=('ue.conf', 'start_ue.sh', )
+	cmdup=
+	}
+    }
+    custom-config {
+	custom-config-id service:UE:start_ue.sh
+	custom-command start_ue.sh
+	config {
+	#!/bin/sh
+	#while ! nc -z 10.0.0.21 4997; do
+	# sleep 0.5
+	#done
+	nr-ue -c ue.conf > ue.log 2>&1 &
+	while ! ip link show uesimtun0; do
+	 sleep 0.5
+	done
+	ip route add default dev uesimtun0
+	          
 	}
     }
     custom-config {
@@ -2251,7 +2309,7 @@ node n9 {
 	# Default Configured NSSAI for this UE
 	default-nssai:
 	  - sst: 1
-	#    sd: 0
+	    sd: 1
 	
 	# Supported integrity algorithms by this UE
 	integrity:
@@ -2329,15 +2387,27 @@ node n13 {
 	!
     }
     canvas c1
-    iconcoords {655.6666666666666 303.3333333333333}
-    labelcoords {655.6666666666666 335.3333333333333}
+    iconcoords {741.6666666666666 267.3333333333333}
+    labelcoords {741.6666666666666 299.3333333333333}
+    services {PCF}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:PCF
 	custom-command PCF
 	config {
-	files=('/etc/open5gs/pcf.yaml', )
-	cmdval=('pidof open5gs-pcfd', )
-	starttime=
+	files=('/etc/open5gs/pcf.yaml', 'start_pcf.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:PCF:start_pcf.sh
+	custom-command start_pcf.sh
+	config {
+	#!/bin/sh
+	while ! nc -z 10.0.1.40 27017; do
+	 sleep 0.5
+	done
+	open5gs-pcfd -D
+	
 	}
     }
     custom-config {
@@ -2528,8 +2598,6 @@ node n13 {
 	
 	}
     }
-    services {PCF}
-    interface-peer {eth0 n10}
 }
 
 node n14 {
@@ -2543,13 +2611,15 @@ node n14 {
 	!
     }
     canvas c1
-    iconcoords {669.0 348.0}
-    labelcoords {669.0 380.0}
+    iconcoords {759.0 336.0}
+    labelcoords {759.0 368.0}
+    services {NSSF}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:NSSF
 	custom-command NSSF
 	config {
-	files=('/etc/open5gs/nssf.yaml', )
+	files=('/etc/open5gs/nssf.yaml', 'start_nssf.sh', )
 	}
     }
     custom-config {
@@ -2578,7 +2648,6 @@ node n14 {
 	#
 	logger:
 	    file: /var/log/open5gs/nssf.log
-	#    level: debug
 	#
 	# nssf:
 	#
@@ -2698,7 +2767,7 @@ node n14 {
 	      - addr: 10.0.1.31
 	        port: 7777
 	    nsi:
-	      - addr: 10.0.1.31
+	      - addr: ::1 # NOT SURE ABOUT THIS ONE
 	        port: 7777
 	        s_nssai:
 	          sst: 1
@@ -2789,8 +2858,6 @@ node n14 {
 	
 	}
     }
-    services {NSSF}
-    interface-peer {eth0 n10}
 }
 
 node n15 {
@@ -2804,13 +2871,28 @@ node n15 {
 	!
     }
     canvas c1
-    iconcoords {667.0 406.6666666666667}
-    labelcoords {667.0 438.6666666666667}
+    iconcoords {727.0 404.6666666666667}
+    labelcoords {727.0 436.6666666666667}
+    services {BSF}
+    interface-peer {eth0 n10}
     custom-config {
 	custom-config-id service:BSF
 	custom-command BSF
 	config {
-	files=('/etc/open5gs/bsf.yaml', )
+	files=('/etc/open5gs/bsf.yaml', 'start_bsf.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:BSF:start_bsf.sh
+	custom-command start_bsf.sh
+	config {
+	#!/bin/sh
+	# Block start of Network Function until MongoDB has correctly started
+	while ! nc -z 10.0.1.40 27017; do
+	 sleep 0.5
+	done
+	open5gs-bsfd -D
+	            
 	}
     }
     custom-config {
@@ -3001,8 +3083,6 @@ node n15 {
 	
 	}
     }
-    services {BSF}
-    interface-peer {eth0 n10}
 }
 
 node n16 {
@@ -3016,8 +3096,8 @@ node n16 {
 	!
     }
     canvas c1
-    iconcoords {90.0 261.0}
-    labelcoords {92.0 302.0}
+    iconcoords {96.0 377.0}
+    labelcoords {98.0 418.0}
     services {MongoDB}
     custom-config {
 	custom-config-id service:MongoDB
@@ -3161,6 +3241,24 @@ node n10 {
     interface-peer {e9 n7}
     interface-peer {e10 n8}
     interface-peer {e11 n16}
+    interface-peer {e12 n12}
+}
+
+node n12 {
+    type router
+    model PC
+    network-config {
+	hostname n12
+	!
+	interface eth0
+	 ip address 10.0.1.28/24
+	 ipv6 address 2001:0::20/64
+	!
+    }
+    canvas c1
+    iconcoords {141.0 276.0}
+    labelcoords {141.0 308.0}
+    interface-peer {eth0 n10}
 }
 
 link l12 {
@@ -3234,6 +3332,11 @@ link l13 {
 
 link l14 {
     nodes {n16 n10}
+    bandwidth 0
+}
+
+link l15 {
+    nodes {n12 n10}
     bandwidth 0
 }
 
